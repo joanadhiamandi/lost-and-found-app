@@ -18,8 +18,17 @@ public class UserSearch {
     @Column(name = "category_id")
     private Integer categoryId;
 
-    @Column(name = "search_query", length = 255)
-    private String searchQuery;
+    @Column(name = "item_type", length = 20)
+    private String itemType; // LOST or FOUND
+
+    @Column(name = "keywords", length = 200)
+    private String keywords;
+
+    @Column(name = "location", length = 200)
+    private String location;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -34,24 +43,91 @@ public class UserSearch {
 
     public UserSearch() {}
 
-    public Integer getSearchId() { return searchId; }
-    public void setSearchId(Integer searchId) { this.searchId = searchId; }
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) this.createdAt = LocalDateTime.now();
+        if (this.isActive == null) this.isActive = true;
+    }
 
-    public Integer getUserId() { return userId; }
-    public void setUserId(Integer userId) { this.userId = userId; }
+    // Getters and Setters
+    public Integer getSearchId() {
+        return searchId;
+    }
 
-    public Integer getCategoryId() { return categoryId; }
-    public void setCategoryId(Integer categoryId) { this.categoryId = categoryId; }
+    public void setSearchId(Integer searchId) {
+        this.searchId = searchId;
+    }
 
-    public String getSearchQuery() { return searchQuery; }
-    public void setSearchQuery(String searchQuery) { this.searchQuery = searchQuery; }
+    public Integer getUserId() {
+        return userId;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
-    public AppUser getUser() { return user; }
-    public void setUser(AppUser user) { this.user = user; }
+    public Integer getCategoryId() {
+        return categoryId;
+    }
 
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean active) {
+        isActive = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    // ADD RELATIONSHIP GETTERS/SETTERS
+    public AppUser getUser() {
+        return user;
+    }
+
+    public void setUser(AppUser user) {
+        this.user = user;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 }

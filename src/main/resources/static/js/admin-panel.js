@@ -1,7 +1,3 @@
-// ===========================
-// Admin Panel JavaScript
-// ===========================
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Admin panel loaded');
 
@@ -12,9 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     addConfirmationStyles();
 });
 
-// ===========================
+
 // Delete Items
-// ===========================
+
 function setupDeleteButtons() {
     // Delete Item buttons
     document.querySelectorAll('.delete-item-btn').forEach(button => {
@@ -43,9 +39,9 @@ function setupDeleteButtons() {
     });
 }
 
-// ===========================
+
 // Delete Item Function
-// ===========================
+
 function deleteItem(itemId, button) {
     // Disable button during request
     button.disabled = true;
@@ -89,9 +85,8 @@ function deleteItem(itemId, button) {
         });
 }
 
-// ===========================
+
 // Delete User Function
-// ===========================
 function deleteUser(userId, button) {
     // Disable button during request
     button.disabled = true;
@@ -135,17 +130,17 @@ function deleteUser(userId, button) {
         });
 }
 
-// ===========================
+
 // Update Stats After Deletion
-// ===========================
+
 function updateStats() {
     // Reload page to refresh stats
     location.reload();
 }
 
-// ===========================
+
 // Notification System
-// ===========================
+
 function showNotification(message, type) {
     // Remove existing notifications
     const existing = document.querySelector('.notification');
@@ -171,9 +166,9 @@ function showNotification(message, type) {
     }, 3000);
 }
 
-// ===========================
+
 // Add Notification Styles
-// ===========================
+
 function addConfirmationStyles() {
     if (!document.getElementById('notification-styles')) {
         const style = document.createElement('style');

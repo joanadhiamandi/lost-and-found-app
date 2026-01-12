@@ -38,7 +38,7 @@ public class SessionFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
 
-        // ✅ Public pages that don't require login
+
         return uri.equals("/") ||
                 uri.equals("/login") ||
                 uri.equals("/dologin") ||

@@ -11,7 +11,7 @@ body {
     padding: 20px;
 }
 
-/* ✅ NAVBAR */
+/* NAVBAR */
 nav {
     background: white;
     padding: 15px 30px;
@@ -51,7 +51,7 @@ nav {
     color: #dc3545 !important;
 }
 
-/* ✅ CONTAINER */
+/* CONTAINER */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -68,7 +68,7 @@ h1 {
     text-align: center;
 }
 
-/* ✅ STATS GRID */
+/*  STATS GRID */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -98,7 +98,7 @@ h1 {
     margin: 0;
 }
 
-/* ✅ ACTIONS GRID */
+/*  ACTIONS GRID */
 .actions-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -138,7 +138,7 @@ h1 {
     font-size: 0.9em;
 }
 
-/* ✅ RESPONSIVE */
+/*  RESPONSIVE */
 @media (max-width: 768px) {
     .container {
         padding: 20px;

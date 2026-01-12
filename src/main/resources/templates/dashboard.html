@@ -1,77 +1,96 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Lost and Found</title>
+    <title>Dashboard - Lost & Found</title>
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 </head>
 <body>
+<!-- Navigation -->
 <nav>
-    <div class="nav-left">
-        <span class="logo">🏠 Dashboard</span>
-    </div>
-    <div class="nav-right">
-        <a th:href="@{/dashboard}">Home</a>
-        <a th:href="@{/items/browse}">Browse</a>
-        <a th:href="@{/messages}">Messages</a>
-        <a th:href="@{/my-items}">My Items</a>
-
-        <a th:if="${session.loggedinuser != null && session.loggedinuser.role == 'ADMIN'}"
-           th:href="@{/admin}" class="admin-link">
-            ⚙️ Admin
+    <div style="font-weight: 700; font-size: 18px;">📦 Lost & Found</div>
+    <div>
+        <a th:href="@{/dashboard}" class="active">🏠 Home</a>
+        <a th:href="@{/items/browse}">🔍 Browse</a>
+        <a th:href="@{/messages}">✉️ Messages</a>
+        <a th:href="@{/my-items}">📋 My Items</a>
+        <!--  ADD ALERT LINK WITH BADGE -->
+        <a th:href="@{/my-alerts}" style="position: relative;">
+            🔔 Alerts
+            <span th:if="${alertCount > 0}"
+                  style="position: absolute; top: -8px; right: -10px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; font-weight: 700;"
+                  th:text="${alertCount}">0</span>
         </a>
-
-        <a th:href="@{/logout}" class="logout">Logout</a>
+        <a th:if="${session.loggedinuser.role == 'ADMIN'}" th:href="@{/admin-panel}">⚙️ Admin</a>
+        <a th:href="@{/logout}" style="color: #f87171;">🚪 Logout</a>
     </div>
 </nav>
 
 <div class="container">
-    <h1>Welcome, <span th:text="${session.loggedinuser.fullName}">User</span>!</h1>
+    <h1>📊 Dashboard</h1>
+    <p style="color: #666; margin-bottom: 30px;">Welcome back, <strong th:text="${session.loggedinuser.fullName}">User</strong>!</p>
 
+    <!-- Stats Cards -->
     <div class="stats-grid">
         <div class="stat-card">
-            <h3>Total Items</h3>
-            <p class="stat-number" th:text="${totalItems}">0</p>
+            <div class="stat-icon">📦</div>
+            <div class="stat-number" th:text="${totalItems}">0</div>
+            <div class="stat-label">Total Items</div>
         </div>
+
         <div class="stat-card">
-            <h3>Lost Items</h3>
-            <p class="stat-number" th:text="${lostItems}">0</p>
+            <div class="stat-icon">😢</div>
+            <div class="stat-number" th:text="${lostItems}">0</div>
+            <div class="stat-label">Lost Items</div>
         </div>
+
         <div class="stat-card">
-            <h3>Found Items</h3>
-            <p class="stat-number" th:text="${foundItems}">0</p>
+            <div class="stat-icon">🎉</div>
+            <div class="stat-number" th:text="${foundItems}">0</div>
+            <div class="stat-label">Found Items</div>
         </div>
+
         <div class="stat-card">
-            <h3>Active Items</h3>
-            <p class="stat-number" th:text="${activeItems}">0</p>
+            <div class="stat-icon">✅</div>
+            <div class="stat-number" th:text="${activeItems}">0</div>
+            <div class="stat-label">Active Items</div>
         </div>
     </div>
 
-    <div class="actions-grid">
-        <a th:href="@{/items/add}" class="action-card">
-            <div class="icon">📝</div>
-            <h3>Post Item</h3>
-            <p>Report a lost or found item</p>
-        </a>
+    <!-- ALERTS NOTIFICATION CARD -->
+    <div th:if="${alertCount > 0}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; margin-top: 30px; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="font-size: 48px;">🔔</div>
+            <div style="flex: 1;">
+                <h3 style="margin: 0 0 8px 0; font-size: 1.5rem;">You have new alerts!</h3>
+                <p style="margin: 0; opacity: 0.9;">
+                    <span th:text="${alertCount}">0</span> item(s) match your search alerts
+                </p>
+            </div>
+            <a th:href="@{/my-alerts}" style="background: white; color: #667eea; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; transition: all 0.3s;">
+                View Alerts →
+            </a>
+        </div>
+    </div>
 
-        <a th:href="@{/items/browse}" class="action-card">
-            <div class="icon">🔍</div>
-            <h3>Browse Items</h3>
-            <p>Search for lost or found items</p>
-        </a>
-
-        <a th:href="@{/my-items}" class="action-card">
-            <div class="icon">📦</div>
-            <h3>My Items</h3>
-            <p>Manage your posted items</p>
-        </a>
-
-        <a th:href="@{/messages}" class="action-card">
-            <div class="icon">💬</div>
-            <h3>Messages</h3>
-            <p>View your conversations</p>
-        </a>
+    <!-- Quick Actions -->
+    <div class="actions">
+        <h2>🚀 Quick Actions</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px;">
+            <a th:href="@{/items/add}" class="action-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                ➕ Post New Item
+            </a>
+            <a th:href="@{/items/browse}" class="action-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; transition: all 0.3s; box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);">
+                🔍 Browse Items
+            </a>
+            <a th:href="@{/my-items}" class="action-btn" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; transition: all 0.3s; box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);">
+                📋 My Items
+            </a>
+            <a th:href="@{/my-alerts}" class="action-btn" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; transition: all 0.3s; box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);">
+                🔔 My Alerts
+            </a>
+        </div>
     </div>
 </div>
 

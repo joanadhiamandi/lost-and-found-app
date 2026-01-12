@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ========== MESSAGE MODAL ==========
+    // MESSAGE MODAL
     const messageBtn = document.getElementById('messageBtn');
     const messageModal = document.getElementById('messageModal');
     const messageInput = document.getElementById('messageInput');
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ========== COPY LINK BUTTON ==========
+    // COPY LINK BUTTON
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', function() {
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// ========== CLOSE MODAL FUNCTION ==========
+// CLOSE MODAL FUNCTION
 function closeMessageModal() {
     const messageModal = document.getElementById('messageModal');
     const modalError = document.getElementById('modalError');
@@ -56,7 +56,7 @@ function closeMessageModal() {
     }
 }
 
-// ========== SEND MESSAGE FUNCTION ==========
+// SEND MESSAGE FUNCTION
 function sendMessageFromModal() {
     const messageInput = document.getElementById('messageInput');
     const messageBtn = document.getElementById('messageBtn');

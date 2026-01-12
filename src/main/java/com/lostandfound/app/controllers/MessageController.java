@@ -34,7 +34,7 @@ public class MessageController {
     @Autowired
     private UserRepository userRepository;
 
-    // ✅ DTO to avoid Hibernate proxy serialization issues
+
     public static class MessageDTO {
         public Integer messageId;
         public String senderName;
@@ -51,7 +51,7 @@ public class MessageController {
         }
     }
 
-    // ✅ IMPROVED: Show actual messages grouped by conversation
+    //Show actual messages grouped by conversation
     @GetMapping("/messages")
     public String viewMessages(HttpSession session, ModelMap model) {
         AppUser user = (AppUser) session.getAttribute("loggedinuser");
@@ -90,7 +90,7 @@ public class MessageController {
         return "messages";
     }
 
-    // ✅ FIXED: View specific conversation thread using getThread() method
+    //  View specific conversation thread using getThread() method
     @GetMapping("/messages/thread/{userId}/{itemId}")
     public String viewThread(@PathVariable Integer userId,
                              @PathVariable Integer itemId,
@@ -111,7 +111,7 @@ public class MessageController {
             return "redirect:/messages";
         }
 
-        // ✅ FIXED: Use the existing getThread() method from MessageRepository
+        // Use the existing getThread() method from MessageRepository
         List<Message> messages = messageRepository.getThread(
                 currentUser.getUserId(),
                 userId,
@@ -163,7 +163,7 @@ public class MessageController {
                 return ResponseEntity.ok(response);
             }
 
-            // ✅ MessageService expects Integer IDs (not AppUser/Item objects)
+
             Message message = messageService.sendMessage(
                     sender.getUserId(),
                     recipient.getUserId(),

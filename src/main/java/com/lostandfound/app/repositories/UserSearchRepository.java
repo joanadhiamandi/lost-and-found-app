@@ -7,5 +7,13 @@ import java.util.List;
 
 @Repository
 public interface UserSearchRepository extends JpaRepository<UserSearch, Integer> {
-    List<UserSearch> findByUserId(Integer userId);
+
+    // Find all active searches
+    List<UserSearch> findByIsActive(Boolean isActive);
+
+    // Find searches by user
+    List<UserSearch> findByUserIdOrderByCreatedAtDesc(Integer userId);
+
+    // Find active searches by user
+    List<UserSearch> findByUserIdAndIsActive(Integer userId, Boolean isActive);
 }

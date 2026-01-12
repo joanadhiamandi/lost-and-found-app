@@ -1,5 +1,3 @@
-// messages.js - Load and display all conversations
-
 document.addEventListener('DOMContentLoaded', function() {
     loadConversations();
 });
@@ -7,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function loadConversations() {
     const conversationsList = document.getElementById('conversationsList');
 
-    // Simulated conversations - in production, this would come from backend
+    // Simulated conversations
     // For now, show a placeholder
     conversationsList.innerHTML = `
         <p style="text-align: center; color: #7f8c8d; padding: 2rem;">
@@ -15,11 +13,6 @@ function loadConversations() {
         </p>
     `;
 
-    // In a real app, you'd fetch from /api/conversations
-    // fetch('/api/conversations')
-    //     .then(r => r.json())
-    //     .then(data => displayConversations(data))
-    //     .catch(e => console.error('Failed to load conversations', e));
 }
 
 function displayConversations(conversations) {

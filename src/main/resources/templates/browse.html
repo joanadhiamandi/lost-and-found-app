@@ -1,77 +1,91 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse Items - Lost and Found</title>
+    <title>Browse Items - Lost & Found</title>
     <link rel="stylesheet" th:href="@{/css/browse.css}">
 </head>
 <body>
+<!-- Navigation -->
 <nav>
-    <div class="nav-left">
-        <span class="logo">🔍 Browse Items</span>
-    </div>
-    <div class="nav-right">
-        <a th:href="@{/dashboard}">Home</a>
-        <a th:href="@{/items/browse}">Browse</a>
-        <a th:href="@{/messages}">Messages</a>
-        <a th:href="@{/my-items}">My Items</a>
-
-        <a th:if="${session.loggedinuser != null && session.loggedinuser.role == 'ADMIN'}"
-           th:href="@{/admin}" style="color: #ffc107; font-weight: bold;">
-            ⚙️ Admin
-        </a>
-
-        <a th:href="@{/logout}">Logout</a>
+    <div style="font-weight: 700; font-size: 18px;">📦 Lost & Found</div>
+    <div>
+        <a th:href="@{/dashboard}">🏠 Home</a>
+        <a th:href="@{/items/browse}" class="active">🔍 Browse</a>
+        <a th:href="@{/messages}">✉️ Messages</a>
+        <a th:href="@{/my-items}">📋 My Items</a>
+        <a th:href="@{/my-alerts}">🔔 Alerts</a>
+        <a th:if="${session.loggedinuser.role == 'ADMIN'}" th:href="@{/admin-panel}">⚙️ Admin</a>
+        <a th:href="@{/logout}" style="color: #f87171;">🚪 Logout</a>
     </div>
 </nav>
 
 <div class="container">
-    <h1>Browse Lost & Found Items</h1>
+    <h1>🔍 Browse Items</h1>
+    <p style="color: #666; margin-bottom: 30px;">Search and filter lost & found items</p>
 
-    <form th:action="@{/items/browse}" method="get" class="search-form">
-        <input type="text" name="keyword" th:value="${keyword}" placeholder="Search by name or description...">
+    <!-- Filters -->
+    <form method="get" th:action="@{/items/browse}" class="filters">
+        <!-- Type Filter -->
+        <select name="itemType" class="filter-select">
+            <option value="">All Types</option>
+            <option value="LOST" th:selected="${selectedType == 'LOST'}">Lost Items</option>
+            <option value="FOUND" th:selected="${selectedType == 'FOUND'}">Found Items</option>
+        </select>
 
-        <select name="category">
+        <!-- Category Filter -->
+        <select name="categoryId" class="filter-select">
             <option value="">All Categories</option>
             <option th:each="cat : ${categories}"
                     th:value="${cat.categoryId}"
-                    th:text="${cat.categoryName}"
-                    th:selected="${category != null && category == cat.categoryId}">
-            </option>
+                    th:selected="${cat.categoryId == selectedCategoryId}"
+                    th:text="${cat.categoryName}">Category</option>
         </select>
 
-        <select name="type">
-            <option value="">Lost & Found</option>
-            <option value="LOST" th:selected="${type == 'LOST'}">Lost Only</option>
-            <option value="FOUND" th:selected="${type == 'FOUND'}">Found Only</option>
-        </select>
+        <!-- Location Filter -->
+        <input type="text" name="location" placeholder="Filter by location"
+               th:value="${selectedLocation}" class="filter-input">
+
+        <!-- Search Query -->
+        <input type="text" name="q" placeholder="Search by keywords..."
+               th:value="${searchQuery}" class="filter-input">
 
         <button type="submit" class="btn-search">🔍 Search</button>
+        <a th:href="@{/items/browse}" class="btn-clear">Clear</a>
     </form>
 
-    <div class="items-grid">
+    <!-- Results Count -->
+    <div style="margin: 20px 0; color: #666; font-weight: 500;">
+        Found <strong th:text="${items.size()}">0</strong> items
+    </div>
+
+    <!-- Items Grid -->
+    <div th:if="${!items.isEmpty()}" class="items-grid">
         <div th:each="item : ${items}" class="item-card">
-            <!-- ✅ FIXED: Use item.itemType instead of item.type -->
-            <div class="item-badge"
-                 th:classappend="${item.itemType == 'LOST' ? 'badge-lost' : 'badge-found'}"
-                 th:text="${item.itemType}">
+            <div class="item-header">
+                <span class="badge" th:classappend="${item.itemType == 'LOST' ? 'badge-lost' : 'badge-found'}"
+                      th:text="${item.itemType}">LOST</span>
+                <span class="badge" th:text="${item.status}">ACTIVE</span>
             </div>
-
             <h3 th:text="${item.itemName}">Item Name</h3>
-            <p th:text="${item.description}">Description</p>
-
-            <div class="item-meta">
-                <span>📍 <span th:text="${item.location}">Location</span></span>
-                <span>📅 <span th:text="${#temporals.format(item.dateLostFound, 'dd MMM yyyy')}">Date</span></span>
-            </div>
-
-            <a th:href="@{/items/{id}(id=${item.itemId})}" class="btn-view">View Details</a>
+            <p class="item-meta">
+                📍 <span th:text="${item.location}">Location</span><br>
+                📅 <span th:text="${#temporals.format(item.dateLostFound, 'dd MMM yyyy')}">Date</span>
+            </p>
+            <a th:href="@{/items/{id}(id=${item.itemId})}" class="btn-view">View Details →</a>
         </div>
     </div>
 
-    <div th:if="${items == null || items.isEmpty()}" class="no-results">
-        <p>No items found. Try adjusting your search criteria.</p>
+    <!-- ⭐ NO RESULTS - CREATE ALERT OPTION -->
+    <div th:if="${items.isEmpty()}" class="no-results">
+        <div style="font-size: 64px; margin-bottom: 16px;">😔</div>
+        <h2 style="color: #666; margin-bottom: 12px;">No items found</h2>
+        <p style="color: #999; margin-bottom: 24px;">Try adjusting your search filters or create an alert</p>
+        <a th:href="@{/my-alerts}" class="btn-alert">🔔 Create Search Alert</a>
+        <p style="color: #999; font-size: 0.9rem; margin-top: 12px;">
+            Get notified when items matching your search are posted
+        </p>
     </div>
 </div>
 

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Alerts - Lost & Found</title>
+    <link rel="stylesheet" th:href="@{/css/my-alerts.css}">
+</head>
+<body>
+<!-- Navigation -->
+<nav>
+    <div style="font-weight: 700; font-size: 18px;">📦 Lost & Found</div>
+    <div>
+        <a th:href="@{/dashboard}">🏠 Home</a>
+        <a th:href="@{/items/browse}">🔍 Browse</a>
+        <a th:href="@{/messages}">✉️ Messages</a>
+        <a th:href="@{/my-items}">📋 My Items</a>
+        <a th:href="@{/my-alerts}" class="active">🔔 Alerts</a>
+        <a th:if="${session.loggedinuser.role == 'ADMIN'}" th:href="@{/admin-panel}">⚙️ Admin</a>
+        <a th:href="@{/logout}" style="color: #f87171;">🚪 Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Success Messages -->
+    <div th:if="${param.success != null}" class="alert-success">
+        <strong th:if="${param.success[0] == 'created'}">✅ Alert created successfully!</strong>
+        <strong th:if="${param.success[0] == 'deleted'}">✅ Alert deleted successfully!</strong>
+        <strong th:if="${param.success[0] == 'deactivated'}">✅ Alert deactivated successfully!</strong>
+        <strong th:if="${param.success[0] == 'cleared'}">✅ Notification cleared!</strong>
+    </div>
+
+    <h1>🔔 My Alerts & Notifications</h1>
+    <p style="color: #666; margin-bottom: 30px;">Manage your search alerts and view notifications</p>
+
+    <!-- NOTIFICATIONS SECTION -->
+    <div class="section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333;">📬 Recent Notifications</h2>
+            <span class="badge" th:text="${alerts.size()} + ' notifications'">0 notifications</span>
+        </div>
+
+        <div th:if="${alerts.isEmpty()}" class="empty-state">
+            <div style="font-size: 64px; margin-bottom: 16px;">📭</div>
+            <h3 style="color: #999; margin: 0 0 8px 0;">No notifications yet</h3>
+            <p style="color: #999; margin: 0;">When items match your search alerts, you'll see them here</p>
+        </div>
+
+        <div class="notifications-list">
+            <div th:each="alert : ${alerts}" class="notification-card">
+                <div style="display: flex; gap: 16px;">
+                    <div class="notif-icon">🎯</div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 8px 0; color: #333;" th:text="${alert.item.itemName}">Item Name</h3>
+                        <p style="margin: 0 0 12px 0; color: #666; font-size: 0.9rem;">
+                            <span class="badge-small" th:classappend="${alert.item.itemType == 'LOST' ? 'badge-lost' : 'badge-found'}"
+                                  th:text="${alert.item.itemType}">FOUND</span>
+                            📍 <span th:text="${alert.item.location}">Location</span> ·
+                            📅 <span th:text="${#temporals.format(alert.item.dateLostFound, 'dd MMM yyyy')}">Date</span>
+                        </p>
+                        <p style="margin: 0 0 12px 0; color: #999; font-size: 0.85rem;">
+                            Notified: <span th:text="${#temporals.format(alert.createdAt, 'dd MMM yyyy, HH:mm')}">Date</span>
+                        </p>
+                        <div style="display: flex; gap: 12px;">
+                            <a th:href="@{/items/{id}(id=${alert.itemId})}" class="btn btn-primary">View Item</a>
+                            <form th:action="@{/alerts/{id}/delete(id=${alert.alertId})}" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-secondary">Clear</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH ALERTS SECTION -->
+    <div class="section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333;">🔍 My Search Alerts</h2>
+            <button onclick="toggleCreateForm()" class="btn btn-primary">+ Create New Alert</button>
+        </div>
+
+        <!-- Create Alert Form -->
+        <div id="createAlertForm" class="create-form" style="display: none;">
+            <h3 style="color: #333; margin-bottom: 16px;">Create New Search Alert</h3>
+            <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">
+                Get notified when items matching your criteria are posted
+            </p>
+            <form th:action="@{/alerts/create}" method="post">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>I'm looking for</label>
+                        <select name="itemType" class="form-control">
+                            <option value="">Any Type</option>
+                            <option value="LOST">Lost Items (I lost something)</option>
+                            <option value="FOUND">Found Items (I found something)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select name="categoryId" class="form-control">
+                            <option value="">Any Category</option>
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat.categoryId}"
+                                    th:text="${cat.categoryName}">Category</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Keywords</label>
+                        <input type="text" name="keywords" class="form-control"
+                               placeholder="e.g., iPhone, wallet, keys">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" name="location" class="form-control"
+                               placeholder="e.g., Library, Cafeteria">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">Create Alert</button>
+                    <button type="button" onclick="toggleCreateForm()" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Search Alerts List -->
+        <div th:if="${searches.isEmpty()}" class="empty-state">
+            <div style="font-size: 64px; margin-bottom: 16px;">🔔</div>
+            <h3 style="color: #999; margin: 0 0 8px 0;">No search alerts yet</h3>
+            <p style="color: #999; margin: 0;">Create an alert to get notified when matching items are posted</p>
+        </div>
+
+        <div class="search-alerts-grid">
+            <div th:each="search : ${searches}" class="search-alert-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <h3 style="margin: 0; color: #333; font-size: 1rem;">
+                        <span th:if="${search.keywords != null and !search.keywords.isEmpty()}"
+                              th:text="${search.keywords}">Keywords</span>
+                        <span th:if="${search.keywords == null or search.keywords.isEmpty()}">General Alert</span>
+                    </h3>
+                    <span th:if="${search.isActive}" class="status-badge active">Active</span>
+                    <span th:unless="${search.isActive}" class="status-badge inactive">Inactive</span>
+                </div>
+
+                <div style="color: #666; font-size: 0.9rem; margin-bottom: 16px;">
+                    <p style="margin: 4px 0;" th:if="${search.itemType != null and !search.itemType.isEmpty()}">
+                        📌 Type: <strong th:text="${search.itemType}">Type</strong>
+                    </p>
+                    <p style="margin: 4px 0;" th:if="${search.categoryId != null}">
+                        📂 Category:
+                        <strong th:each="cat : ${categories}"
+                                th:if="${cat.categoryId == search.categoryId}"
+                                th:text="${cat.categoryName}">Category</strong>
+                    </p>
+                    <p style="margin: 4px 0;" th:if="${search.location != null and !search.location.isEmpty()}">
+                        📍 Location: <strong th:text="${search.location}">Location</strong>
+                    </p>
+                    <p style="margin: 4px 0; color: #999; font-size: 0.85rem;">
+                        Created: <span th:text="${#temporals.format(search.createdAt, 'dd MMM yyyy')}">Date</span>
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                    <form th:if="${search.isActive}"
+                          th:action="@{/alerts/search/{id}/deactivate(id=${search.searchId})}"
+                          method="post" style="display: inline;">
+                        <button type="submit" class="btn-small btn-warning">Pause</button>
+                    </form>
+                    <form th:action="@{/alerts/search/{id}/delete(id=${search.searchId})}"
+                          method="post" style="display: inline;"
+                          onsubmit="return confirm('Delete this search alert?');">
+                        <button type="submit" class="btn-small btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/my-alerts.js}"></script>
+</body>
+</html>

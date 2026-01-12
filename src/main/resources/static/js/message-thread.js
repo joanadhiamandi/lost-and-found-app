@@ -1,5 +1,3 @@
-// message-thread.js - Handle message sending and thread display
-
 document.addEventListener('DOMContentLoaded', function() {
     const sendBtn = document.getElementById('sendBtn');
     const messageText = document.getElementById('messageText');

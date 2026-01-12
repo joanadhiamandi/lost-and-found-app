@@ -23,6 +23,9 @@ public class ItemService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private AlertService alertService; // ⭐ ADD THIS
+
     public Item createItem(AppUser loggedInUser,
                            String itemType,
                            Integer categoryId,
@@ -31,7 +34,6 @@ public class ItemService {
                            String location,
                            LocalDate dateLostFound,
                            String contactInfo) {
-
         if (loggedInUser == null) return null;
         if (itemType == null || itemType.trim().isEmpty()) return null;
         if (categoryId == null || !categoryRepository.existsById(categoryId)) return null;
@@ -53,15 +55,20 @@ public class ItemService {
         item.setCreatedAt(LocalDateTime.now());
         item.setUpdatedAt(LocalDateTime.now());
 
-        return itemRepository.save(item);
+        Item savedItem = itemRepository.save(item);
+
+        // CHECK FOR MATCHING SEARCH ALERTS
+        if (savedItem != null && savedItem.getItemId() != null) {
+            alertService.checkForMatchingSearches(savedItem);
+        }
+
+        return savedItem;
     }
 
     // browse with type + category + free-text q + location
     public List<Item> browseItems(String itemType, Integer categoryId, String q, String location) {
-
         String status = "ACTIVE";
         String type = (itemType == null || itemType.trim().isEmpty()) ? null : itemType.trim().toUpperCase();
-
         List<Item> items;
 
         if (type != null && categoryId != null) {
@@ -115,7 +122,6 @@ public class ItemService {
 
         boolean isOwner = item.getUserId() != null && item.getUserId().equals(user.getUserId());
         boolean isAdmin = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole());
-
         if (!isOwner && !isAdmin) return false;
 
         item.setStatus("RESOLVED");
@@ -130,7 +136,6 @@ public class ItemService {
 
         boolean isOwner = item.getUserId() != null && item.getUserId().equals(user.getUserId());
         boolean isAdmin = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole());
-
         if (!isOwner && !isAdmin) return false;
 
         // Soft delete
@@ -146,7 +151,6 @@ public class ItemService {
 
         boolean isOwner = item.getUserId() != null && item.getUserId().equals(user.getUserId());
         boolean isAdmin = user.getRole() != null && "ADMIN".equalsIgnoreCase(user.getRole());
-
         if (!isOwner && !isAdmin) return null;
 
         return item;
@@ -161,10 +165,8 @@ public class ItemService {
                               Integer categoryId,
                               String itemType,
                               LocalDate dateLostFound) {
-
         Item item = getItemForEdit(itemId, user);
         if (item == null) return false;
-
         if (itemName == null || itemName.trim().isEmpty()) return false;
         if (location == null || location.trim().isEmpty()) return false;
         if (dateLostFound == null) return false;
@@ -199,7 +201,6 @@ public class ItemService {
         if (baseItem == null || baseItem.getCategoryId() == null) return List.of();
 
         List<Item> items = itemRepository.findByStatusAndCategoryIdOrderByCreatedAtDesc("ACTIVE", baseItem.getCategoryId());
-
         return items.stream()
                 .filter(i -> i.getItemId() != null && !i.getItemId().equals(baseItem.getItemId()))
                 .limit(limit)

@@ -209,7 +209,7 @@ tr:hover {
     background: #da190b;
 }
 
-/* ========== NO ITEMS ========== */
+/* NO ITEMS  */
 .no-items {
     text-align: center;
     padding: 60px 20px;
@@ -221,7 +221,7 @@ tr:hover {
     margin-bottom: 20px;
 }
 
-/* ========== RESPONSIVE ========== */
+/* RESPONSIVE */
 @media (max-width: 768px) {
     .container {
         padding: 20px;

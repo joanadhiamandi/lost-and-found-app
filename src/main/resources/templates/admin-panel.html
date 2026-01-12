@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title>Admin Panel - Analytics Dashboard</title>
     <link rel="stylesheet" th:href="@{/css/admin-panel.css}">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -42,6 +44,37 @@
             <div class="label">Active Items</div>
             <div class="value" th:text="${activeItems}">0</div>
         </div>
+        <div class="card">
+            <div class="label">Resolved Items</div>
+            <div class="value" th:text="${resolvedItems}">0</div>
+        </div>
+    </div>
+
+
+
+    <div class="charts-container">
+        <!-- Row 1: Lost vs Found + Items by Category -->
+        <div class="charts-row">
+            <!-- Lost vs Found Pie Chart -->
+            <div class="chart-card">
+                <h3>📊 Lost vs Found Items</h3>
+                <canvas id="lostFoundChart"></canvas>
+            </div>
+
+            <!-- Items by Category Bar Chart -->
+            <div class="chart-card">
+                <h3>📦 Items by Category</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Row 2: Most Active Members -->
+        <div class="charts-row">
+            <div class="chart-card full-width">
+                <h3>👥 Most Active Members (Top 5)</h3>
+                <canvas id="activeUsersChart"></canvas>
+            </div>
+        </div>
     </div>
 
     <!-- All Items Section -->
@@ -53,6 +86,7 @@
                 <th>ID</th>
                 <th>Type</th>
                 <th>Name</th>
+                <th>Category</th>
                 <th>Owner</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -63,10 +97,10 @@
                 <td th:text="${item.itemId}">1</td>
                 <td th:text="${item.itemType}">LOST</td>
                 <td th:text="${item.itemName}">Item Name</td>
+                <td th:text="${item.category != null ? item.category.categoryName : 'N/A'}">Category</td>
                 <td th:text="${item.user != null ? item.user.fullName : 'Unknown'}">Owner</td>
                 <td th:text="${item.status}">ACTIVE</td>
                 <td>
-                    <!-- ✅ FIXED: Added all required data attributes -->
                     <button class="btn btn-danger delete-item-btn"
                             th:attr="data-item-id=${item.itemId}, data-item-name=${item.itemName}">
                         Delete
@@ -99,7 +133,6 @@
                 <td th:text="${user.email}">email@example.com</td>
                 <td th:text="${user.role}">MEMBER</td>
                 <td>
-                    <!-- ✅ FIXED: Added all required data attributes -->
                     <button class="btn btn-danger delete-user-btn"
                             th:attr="data-user-id=${user.userId}, data-username=${user.username}">
                         Delete
@@ -111,7 +144,173 @@
     </div>
 </div>
 
+<!-- Chart.js Initialization Script -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
 
+    // Get data from Thymeleaf
+    const lostCount = /*[[${lostCount}]]*/ 0;
+    const foundCount = /*[[${foundCount}]]*/ 0;
+
+    const topUserNames = /*[[${topUserNames}]]*/ [];
+    const topUserCounts = /*[[${topUserCounts}]]*/ [];
+
+    const categoryNames = /*[[${categoryNames}]]*/ [];
+    const categoryCounts = /*[[${categoryCounts}]]*/ [];
+
+
+    // 1. LOST vs FOUND PIE CHART
+
+    const lostFoundCtx = document.getElementById('lostFoundChart').getContext('2d');
+    new Chart(lostFoundCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Lost Items', 'Found Items'],
+            datasets: [{
+                data: [lostCount, foundCount],
+                backgroundColor: [
+                    '#FF6B6B',  // Red for Lost
+                    '#4ECDC4'   // Teal for Found
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 14 },
+                        padding: 15
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            const total = lostCount + foundCount;
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            return label + ': ' + value + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+
+    // 2. ITEMS BY CATEGORY BAR CHART
+
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+            labels: categoryNames,
+            datasets: [{
+                label: 'Number of Items',
+                data: categoryCounts,
+                backgroundColor: '#7E57C2',
+                borderColor: '#5E35B1',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        font: { size: 12 }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: { size: 12 }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Items: ' + context.parsed.y;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+
+    // 3. MOST ACTIVE MEMBERS HORIZONTAL BAR CHART
+
+    const activeUsersCtx = document.getElementById('activeUsersChart').getContext('2d');
+    new Chart(activeUsersCtx, {
+        type: 'bar',
+        data: {
+            labels: topUserNames,
+            datasets: [{
+                label: 'Items Posted',
+                data: topUserCounts,
+                backgroundColor: [
+                    '#FF6B6B',
+                    '#4ECDC4',
+                    '#45B7D1',
+                    '#FFA07A',
+                    '#98D8C8'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            indexAxis: 'y',  // Horizontal bars
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        font: { size: 12 }
+                    }
+                },
+                y: {
+                    ticks: {
+                        font: { size: 13 }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Posts: ' + context.parsed.x;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    /*]]>*/
+</script>
+
+<!-- Admin Panel JavaScript for Delete Functionality -->
 <script th:src="@{/js/admin-panel.js}"></script>
 </body>
 </html>

@@ -11,7 +11,7 @@ body {
     padding: 20px;
 }
 
-/* ========== NAVBAR ========== */
+/* NAVBAR */
 nav {
     background: white;
     padding: 15px 30px;
@@ -56,7 +56,7 @@ nav {
     font-weight: bold;
 }
 
-/* ========== CONTAINER ========== */
+/* CONTAINER */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -73,7 +73,7 @@ h1 {
     font-size: 2em;
 }
 
-/* ========== SEARCH FORM ========== */
+/* SEARCH FORM  */
 .search-form {
     display: flex;
     gap: 10px;
@@ -125,7 +125,7 @@ h1 {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
 }
 
-/* ========== ITEMS GRID ========== */
+/* ITEMS GRID */
 .items-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -219,7 +219,7 @@ h1 {
     transform: translateX(5px);
 }
 
-/* ========== NO RESULTS ========== */
+/* NO RESULTS  */
 .no-results {
     text-align: center;
     padding: 60px 20px;
@@ -231,7 +231,6 @@ h1 {
     margin-bottom: 10px;
 }
 
-/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
     .container {
         padding: 20px;
@@ -255,3 +254,29 @@ h1 {
         width: 100%;
     }
 }
+
+.no-results {
+    text-align: center;
+    padding: 80px 20px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    margin-top: 40px;
+}
+
+.btn-alert {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 14px 32px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-alert:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+

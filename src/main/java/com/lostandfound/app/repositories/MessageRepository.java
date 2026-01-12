@@ -42,7 +42,7 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
                          @Param("other") Integer other,
                          @Param("itemId") Integer itemId);
 
-    // ✅ NEW METHOD - Add this to fetch all messages for a user
+
     @Query("""
         SELECT m
         FROM Message m
