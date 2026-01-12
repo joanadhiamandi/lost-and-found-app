@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item</title>
+
+    <link rel="stylesheet" th:href="@{/css/add-item.css}">
+    <script th:src="@{/js/add-item.js}" defer></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+
+        <div class="card__header">
+            <h1>Post a New Item</h1>
+            <p class="subtitle">Help your community by reporting a lost or found item.</p>
+        </div>
+
+        <div th:if="${error}" class="alert alert-error show" th:text="${error}"></div>
+
+        <form method="post" th:action="@{/items/save}">
+            <div class="form-group">
+                <label for="itemType">Item Type:</label>
+                <select id="itemType" name="itemType" required>
+                    <option value="LOST">LOST</option>
+                    <option value="FOUND">FOUND</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="categoryId">Category:</label>
+                <select id="categoryId" name="categoryId" required>
+                    <option value="">Select Category</option>
+                    <option th:each="c : ${categories}"
+                            th:value="${c.categoryId}"
+                            th:text="${c.categoryName}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="itemName">Item Name:</label>
+                <input id="itemName" type="text" name="itemName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input id="location" type="text" name="location" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dateLostFound">Date Lost/Found:</label>
+                <input id="dateLostFound" type="date" name="dateLostFound" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contactInfo">Contact Info:</label>
+                <input id="contactInfo" type="text" name="contactInfo">
+            </div>
+
+            <button class="btn btn-primary" type="submit">Submit</button>
+
+            <div class="page-links">
+                <a th:href="@{/items/browse}">Browse Items</a>
+                <span class="sep">•</span>
+                <a th:href="@{/dashboard}">Back to Dashboard</a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,257 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* ========== NAVBAR ========== */
+nav {
+    background: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.nav-right {
+    display: flex;
+    gap: 5px;
+}
+
+.nav-right a {
+    color: #333;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.nav-right a:hover {
+    background: #f0f0f0;
+}
+
+.admin-link {
+    color: #ffc107 !important;
+    font-weight: bold;
+}
+
+/* ========== CONTAINER ========== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 2em;
+}
+
+/* ========== SEARCH FORM ========== */
+.search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-form input,
+.search-form select {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.search-form input:focus,
+.search-form select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.search-form input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-form select {
+    min-width: 140px;
+}
+
+.btn-search {
+    padding: 12px 30px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.btn-search:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* ========== ITEMS GRID ========== */
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.item-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+}
+
+.item-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-lost {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.badge-found {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.item-card h3 {
+    color: #333;
+    margin: 10px 0 15px 0;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.item-card > p {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #777;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.item-meta span {
+    display: flex;
+    align-items: center;
+}
+
+.btn-view {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.btn-view:hover {
+    background: #5568d3;
+    transform: translateX(5px);
+}
+
+/* ========== NO RESULTS ========== */
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.no-results p {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .items-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-form {
+        flex-direction: column;
+    }
+
+    .search-form input,
+    .search-form select,
+    .btn-search {
+        width: 100%;
+    }
+}

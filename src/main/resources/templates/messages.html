@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Lost and Found</title>
+    <link rel="stylesheet" th:href="@{/css/messages.css}">
+</head>
+<body>
+<nav>
+    <div class="nav-left">
+        <span class="logo">💬 Messages</span>
+    </div>
+    <div class="nav-right">
+        <a th:href="@{/dashboard}">Home</a>
+        <a th:href="@{/items/browse}">Browse</a>
+        <a th:href="@{/messages}">Messages</a>
+        <a th:href="@{/my-items}">My Items</a>
+
+        <a th:if="${session.loggedinuser != null && session.loggedinuser.role == 'ADMIN'}"
+           th:href="@{/admin}" style="color: #ffc107; font-weight: bold;">
+            ⚙️ Admin
+        </a>
+
+        <a th:href="@{/logout}">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Your Conversations</h1>
+
+    <div th:if="${conversations != null && !conversations.isEmpty()}" class="conversations-list">
+        <div th:each="entry : ${conversations}" class="conversation-card">
+            <div th:with="otherUserId=${entry.key}, msgs=${entry.value}, latestMsg=${msgs[0]}">
+                <div th:with="otherUser=${latestMsg.sender.userId == currentUserId ? latestMsg.recipient : latestMsg.sender}">
+                    <h3 th:text="${otherUser.fullName}">User Name</h3>
+                    <p class="last-message" th:text="${latestMsg.messageText}">Last message...</p>
+                    <span class="message-date"
+                          th:text="${#temporals.format(latestMsg.createdAt, 'dd MMM yyyy HH:mm')}">
+                            Date
+                        </span>
+                    <span class="message-count" th:text="${msgs.size()} + ' messages'">3 messages</span>
+
+                    <a th:href="@{/messages/thread/{userId}/{itemId}(userId=${otherUserId}, itemId=${latestMsg.item.itemId})}"
+                       class="btn btn-view">
+                        View Conversation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${conversations == null || conversations.isEmpty()}" class="no-messages">
+        <p>📭 No messages yet. Start a conversation by messaging an item owner!</p>
+        <a th:href="@{/items/browse}" class="btn btn-primary">Browse Items</a>
+    </div>
+</div>
+
+<script th:src="@{/js/messages.js}"></script>
+</body>
+</html>

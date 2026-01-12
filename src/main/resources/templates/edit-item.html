@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Item</title>
+
+    <link rel="stylesheet" href="/css/edit-item.css">
+    <script src="/js/edit-item.js" defer></script>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Edit Item</h2>
+
+    <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+
+    <form method="post" action="/items/update">
+        <input type="hidden" name="itemId" th:value="${item.itemId}"/>
+
+        <div class="form-grid">
+
+            <div class="form-row">
+                <label>Item Type:</label>
+                <select name="itemType" required>
+                    <option value="LOST" th:selected="${item.itemType == 'LOST'}">LOST</option>
+                    <option value="FOUND" th:selected="${item.itemType == 'FOUND'}">FOUND</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Category:</label>
+                <select name="categoryId" required>
+                    <option th:each="c : ${categories}"
+                            th:value="${c.categoryId}"
+                            th:text="${c.categoryName}"
+                            th:selected="${c.categoryId == item.categoryId}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Item Name:</label>
+                <input type="text" name="itemName" th:value="${item.itemName}" required/>
+            </div>
+
+            <div class="form-row">
+                <label>Location:</label>
+                <input type="text" name="location" th:value="${item.location}" required/>
+            </div>
+
+            <div class="form-row" style="grid-column: 1 / -1;">
+                <label>Description:</label>
+                <textarea name="description" th:text="${item.description}"></textarea>
+            </div>
+
+            <div class="form-row">
+                <label>Date Lost/Found:</label>
+                <input type="date" name="dateLostFound" th:value="${item.dateLostFound}" required/>
+            </div>
+
+            <div class="form-row">
+                <label>Contact Info:</label>
+                <input type="text" name="contactInfo" th:value="${item.contactInfo}"/>
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" type="submit">Save Changes</button>
+            <a class="btn btn-outline" href="/my-items">Back to My Items</a>
+        </div>
+    </form>
+
+</div>
+
+</body>
+</html>

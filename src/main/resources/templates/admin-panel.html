@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/css/admin-panel.css}">
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>⚙️ Admin Dashboard</h1>
+        <div class="actions">
+            <a th:href="@{/dashboard}" class="btn">🏠 Home</a>
+            <a th:href="@{/items/browse}" class="btn">📋 Browse</a>
+            <a th:href="@{/messages}" class="btn">✉️ Messages</a>
+            <a th:href="@{/my-items}" class="btn">📦 My Items</a>
+            <a th:href="@{/logout}" class="btn btn-danger">🚪 Logout</a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats">
+        <div class="card">
+            <div class="label">Total Users</div>
+            <div class="value" th:text="${totalUsers}">0</div>
+        </div>
+        <div class="card">
+            <div class="label">Total Items</div>
+            <div class="value" th:text="${totalItems}">0</div>
+        </div>
+        <div class="card">
+            <div class="label">Lost Items</div>
+            <div class="value" th:text="${lostItems}">0</div>
+        </div>
+        <div class="card">
+            <div class="label">Found Items</div>
+            <div class="value" th:text="${foundItems}">0</div>
+        </div>
+        <div class="card">
+            <div class="label">Active Items</div>
+            <div class="value" th:text="${activeItems}">0</div>
+        </div>
+    </div>
+
+    <!-- All Items Section -->
+    <div class="section">
+        <h2>📦 All Items</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.itemId}">1</td>
+                <td th:text="${item.itemType}">LOST</td>
+                <td th:text="${item.itemName}">Item Name</td>
+                <td th:text="${item.user != null ? item.user.fullName : 'Unknown'}">Owner</td>
+                <td th:text="${item.status}">ACTIVE</td>
+                <td>
+                    <!-- ✅ FIXED: Added all required data attributes -->
+                    <button class="btn btn-danger delete-item-btn"
+                            th:attr="data-item-id=${item.itemId}, data-item-name=${item.itemName}">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- All Users Section -->
+    <div class="section">
+        <h2>👥 All Users</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.userId}">1</td>
+                <td th:text="${user.username}">username</td>
+                <td th:text="${user.fullName}">Full Name</td>
+                <td th:text="${user.email}">email@example.com</td>
+                <td th:text="${user.role}">MEMBER</td>
+                <td>
+                    <!-- ✅ FIXED: Added all required data attributes -->
+                    <button class="btn btn-danger delete-user-btn"
+                            th:attr="data-user-id=${user.userId}, data-username=${user.username}">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script th:src="@{/js/admin-panel.js}"></script>
+</body>
+</html>

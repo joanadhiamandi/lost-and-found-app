@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Items - Lost and Found</title>
+    <link rel="stylesheet" th:href="@{/css/browse.css}">
+</head>
+<body>
+<nav>
+    <div class="nav-left">
+        <span class="logo">🔍 Browse Items</span>
+    </div>
+    <div class="nav-right">
+        <a th:href="@{/dashboard}">Home</a>
+        <a th:href="@{/items/browse}">Browse</a>
+        <a th:href="@{/messages}">Messages</a>
+        <a th:href="@{/my-items}">My Items</a>
+
+        <a th:if="${session.loggedinuser != null && session.loggedinuser.role == 'ADMIN'}"
+           th:href="@{/admin}" style="color: #ffc107; font-weight: bold;">
+            ⚙️ Admin
+        </a>
+
+        <a th:href="@{/logout}">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Browse Lost & Found Items</h1>
+
+    <form th:action="@{/items/browse}" method="get" class="search-form">
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="Search by name or description...">
+
+        <select name="category">
+            <option value="">All Categories</option>
+            <option th:each="cat : ${categories}"
+                    th:value="${cat.categoryId}"
+                    th:text="${cat.categoryName}"
+                    th:selected="${category != null && category == cat.categoryId}">
+            </option>
+        </select>
+
+        <select name="type">
+            <option value="">Lost & Found</option>
+            <option value="LOST" th:selected="${type == 'LOST'}">Lost Only</option>
+            <option value="FOUND" th:selected="${type == 'FOUND'}">Found Only</option>
+        </select>
+
+        <button type="submit" class="btn-search">🔍 Search</button>
+    </form>
+
+    <div class="items-grid">
+        <div th:each="item : ${items}" class="item-card">
+            <!-- ✅ FIXED: Use item.itemType instead of item.type -->
+            <div class="item-badge"
+                 th:classappend="${item.itemType == 'LOST' ? 'badge-lost' : 'badge-found'}"
+                 th:text="${item.itemType}">
+            </div>
+
+            <h3 th:text="${item.itemName}">Item Name</h3>
+            <p th:text="${item.description}">Description</p>
+
+            <div class="item-meta">
+                <span>📍 <span th:text="${item.location}">Location</span></span>
+                <span>📅 <span th:text="${#temporals.format(item.dateLostFound, 'dd MMM yyyy')}">Date</span></span>
+            </div>
+
+            <a th:href="@{/items/{id}(id=${item.itemId})}" class="btn-view">View Details</a>
+        </div>
+    </div>
+
+    <div th:if="${items == null || items.isEmpty()}" class="no-results">
+        <p>No items found. Try adjusting your search criteria.</p>
+    </div>
+</div>
+
+<script th:src="@{/js/browse.js}"></script>
+</body>
+</html>

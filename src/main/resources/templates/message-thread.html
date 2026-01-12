@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversation - Lost & Found</title>
+    <link rel="stylesheet" href="/css/message-thread.css">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">📦 Lost & Found</a>
+        <ul class="nav-menu">
+            <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+            <li><a href="/items/browse" class="nav-link">Browse</a></li>
+            <li><a href="/items/add" class="nav-link">Post Item</a></li>
+            <li><a href="/messages" class="nav-link active">Messages</a></li>
+            <li><a href="/my-items" class="nav-link">My Items</a></li>
+            <li><a href="/admin" class="nav-link">Admin</a></li>
+            <li><a href="/logout" class="nav-link logout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Thread Container -->
+<div class="thread-container">
+    <div class="thread-header">
+        <a href="/messages" class="back-btn">← Back to Messages</a>
+        <h1>Conversation</h1>
+    </div>
+
+    <!-- Messages Display -->
+    <div class="messages-display" id="messagesDisplay">
+        <div th:if="${messages.isEmpty()}" class="empty-message">
+            <p>No messages in this conversation yet.</p>
+        </div>
+
+        <div th:each="msg : ${messages}" class="message-item" th:classappend="${msg.sender.userId == user.userId} ? 'sent' : 'received'">
+            <div class="message-content">
+                <p class="sender" th:text="${msg.sender.username}"></p>
+                <p class="text" th:text="${msg.messageText}"></p>
+                <span class="timestamp" th:text="${#temporals.format(msg.createdAt, 'dd MMM yyyy HH:mm')}"></span>
+                <span th:if="${msg.readAt != null}" class="read-indicator">✓✓</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reply Form -->
+    <div class="reply-form">
+        <textarea id="messageText" placeholder="Type your reply..." maxlength="1000"></textarea>
+        <button id="sendBtn" class="btn btn-primary">Send</button>
+        <span id="errorMsg" class="error-msg"></span>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const otherUserId = [[${otherUserId}]];
+    const itemId = [[${itemId}]];
+</script>
+<script src="/js/message-thread.js"></script>
+</body>
+</html>

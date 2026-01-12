@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Items</title>
+    <link rel="stylesheet" th:href="@{/css/browse-items.css}">
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="card__header">
+            <h1>Browse Items</h1>
+            <p class="subtitle">Search lost & found listings.</p>
+        </div>
+
+        <form method="get" th:action="@{/items/browse}">
+            <div class="form-group">
+                <label>Search</label>
+                <input type="text" name="q" th:value="${q}" placeholder="Name, description...">
+            </div>
+
+            <div class="form-group">
+                <label>Type</label>
+                <select name="itemType">
+                    <option value="" th:selected="${itemType == null || itemType == ''}">All</option>
+                    <option value="LOST" th:selected="${itemType == 'LOST'}">LOST</option>
+                    <option value="FOUND" th:selected="${itemType == 'FOUND'}">FOUND</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select name="categoryId">
+                    <option value="" th:selected="${categoryId == null}">All</option>
+                    <option th:each="c : ${categories}"
+                            th:value="${c.categoryId}"
+                            th:text="${c.categoryName}"
+                            th:selected="${categoryId != null && c.categoryId == categoryId}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" name="location" th:value="${location}" placeholder="City/Area">
+            </div>
+
+            <button class="btn btn-primary" type="submit">Apply</button>
+        </form>
+
+        <hr style="margin: 18px 0; border: none; border-top: 1px solid #eee;">
+
+        <div th:if="${#lists.isEmpty(items)}" class="alert alert-error show">
+            No items found.
+        </div>
+
+        <div th:each="item : ${items}" class="item-card">
+            <div class="badge" th:text="${item.itemType}">LOST</div>
+            <div class="title" th:text="${item.itemName}">Item name</div>
+            <div class="meta">
+                <span th:text="${item.location}">Location</span>
+                <span>•</span>
+                <span th:text="${item.createdAt}">Date</span>
+            </div>
+            <a th:href="@{/items/{id}(id=${item.itemId})}">View details</a>
+        </div>
+
+        <div class="page-links">
+            <a th:href="@{/dashboard}">Back to Dashboard</a>
+            <span class="sep">•</span>
+            <a th:href="@{/items/add}">Post Item</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Lost & Found</title>
+    <link href="/css/login.css" rel="stylesheet">
+</head>
+<body>
+<button class="close-btn" id="closeBtn">×</button>
+
+<div class="container">
+    <div class="card">
+        <div class="card__header">
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Login to your Lost & Found account</p>
+        </div>
+
+        <div id="alertContainer" class="alert"></div>
+
+        <form id="loginForm" method="POST" action="/dologin">
+            <div class="form-group">
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" placeholder="Enter username or email" required>
+                <div id="usernameError" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+                <div id="passwordError" class="error-message"></div>
+            </div>
+
+            <div class="form-group remember-me">
+                <input type="checkbox" id="rememberMe" name="rememberMe">
+                <label for="rememberMe">Remember me</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+
+        <div class="signup-link">
+            Don't have an account? <a href="/register">Sign up</a>
+        </div>
+    </div>
+</div>
+
+<script src="/js/login.js"></script>
+</body>
+</html>
