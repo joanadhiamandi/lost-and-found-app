@@ -22,8 +22,18 @@
 </nav>
 
 <div class="container">
-    <h1>🔍 Browse Items</h1>
-    <p style="color: #666; margin-bottom: 30px;">Search and filter lost & found items</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h1>🔍 Browse Items</h1>
+            <p style="color: #666; margin: 0;">Search and filter lost & found items</p>
+        </div>
+        <!-- ⭐ CSV EXPORT BUTTON -->
+        <a th:href="@{/reports/items.csv(itemType=${selectedType},categoryId=${selectedCategoryId})}"
+           class="export-btn"
+           title="Export current results to CSV">
+            📥 Export CSV
+        </a>
+    </div>
 
     <!-- Filters -->
     <form method="get" th:action="@{/items/browse}" class="filters">
@@ -44,48 +54,49 @@
         </select>
 
         <!-- Location Filter -->
-        <input type="text" name="location" placeholder="Filter by location"
-               th:value="${selectedLocation}" class="filter-input">
+        <input type="text"
+               name="location"
+               class="filter-input"
+               placeholder="📍 Location"
+               th:value="${selectedLocation}">
 
         <!-- Search Query -->
-        <input type="text" name="q" placeholder="Search by keywords..."
-               th:value="${searchQuery}" class="filter-input">
+        <input type="text"
+               name="q"
+               class="filter-input"
+               placeholder="🔍 Search keywords..."
+               th:value="${searchQuery}">
 
-        <button type="submit" class="btn-search">🔍 Search</button>
-        <a th:href="@{/items/browse}" class="btn-clear">Clear</a>
+        <button type="submit" class="filter-btn">Apply Filters</button>
+        <a th:href="@{/items/browse}" class="clear-btn">Clear</a>
     </form>
 
-    <!-- Results Count -->
-    <div style="margin: 20px 0; color: #666; font-weight: 500;">
-        Found <strong th:text="${items.size()}">0</strong> items
-    </div>
-
     <!-- Items Grid -->
-    <div th:if="${!items.isEmpty()}" class="items-grid">
-        <div th:each="item : ${items}" class="item-card">
-            <div class="item-header">
-                <span class="badge" th:classappend="${item.itemType == 'LOST' ? 'badge-lost' : 'badge-found'}"
-                      th:text="${item.itemType}">LOST</span>
-                <span class="badge" th:text="${item.status}">ACTIVE</span>
-            </div>
-            <h3 th:text="${item.itemName}">Item Name</h3>
-            <p class="item-meta">
-                📍 <span th:text="${item.location}">Location</span><br>
-                📅 <span th:text="${#temporals.format(item.dateLostFound, 'dd MMM yyyy')}">Date</span>
-            </p>
-            <a th:href="@{/items/{id}(id=${item.itemId})}" class="btn-view">View Details →</a>
-        </div>
+    <div th:if="${items.isEmpty()}" class="empty-state">
+        <div style="font-size: 64px; margin-bottom: 16px;">🔍</div>
+        <h3 style="color: #999; margin: 0 0 8px 0;">No items found</h3>
+        <p style="color: #999; margin: 0;">Try adjusting your search filters or create an alert</p>
+        <a th:href="@{/my-alerts}" style="display: inline-block; margin-top: 16px; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
+            🔔 Create Alert
+        </a>
     </div>
 
-    <!-- ⭐ NO RESULTS - CREATE ALERT OPTION -->
-    <div th:if="${items.isEmpty()}" class="no-results">
-        <div style="font-size: 64px; margin-bottom: 16px;">😔</div>
-        <h2 style="color: #666; margin-bottom: 12px;">No items found</h2>
-        <p style="color: #999; margin-bottom: 24px;">Try adjusting your search filters or create an alert</p>
-        <a th:href="@{/my-alerts}" class="btn-alert">🔔 Create Search Alert</a>
-        <p style="color: #999; font-size: 0.9rem; margin-top: 12px;">
-            Get notified when items matching your search are posted
-        </p>
+    <div class="items-grid">
+        <div th:each="item : ${items}" class="item-card">
+            <div class="item-type-badge" th:classappend="${item.itemType == 'LOST' ? 'lost' : 'found'}" th:text="${item.itemType}">LOST</div>
+
+            <h3 th:text="${item.itemName}">Item Name</h3>
+            <p class="item-category" th:if="${item.category != null}" th:text="${item.category.categoryName}">Category</p>
+
+            <div class="item-details">
+                <span>📍 <span th:text="${item.location}">Location</span></span>
+                <span>📅 <span th:text="${#temporals.format(item.dateLostFound, 'dd MMM yyyy')}">Date</span></span>
+            </div>
+
+            <p class="item-description" th:text="${item.description}">Description</p>
+
+            <a th:href="@{/items/{id}(id=${item.itemId})}" class="view-details-btn">View Details →</a>
+        </div>
     </div>
 </div>
 

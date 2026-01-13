@@ -18,6 +18,7 @@
             <a th:href="@{/items/browse}" class="btn">📋 Browse</a>
             <a th:href="@{/messages}" class="btn">✉️ Messages</a>
             <a th:href="@{/my-items}" class="btn">📦 My Items</a>
+            <a th:href="@{/my-alerts}" class="btn">🔔 Alerts</a>
             <a th:href="@{/logout}" class="btn btn-danger">🚪 Logout</a>
         </div>
     </div>
@@ -50,7 +51,33 @@
         </div>
     </div>
 
-
+    <!-- ⭐ CSV EXPORT SECTION -->
+    <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px; border-radius: 12px; margin: 20px 0;">
+        <h2 style="color: white; margin: 0 0 16px 0; font-size: 1.3rem;">📥 Export Reports</h2>
+        <p style="color: rgba(255,255,255,0.9); margin: 0 0 20px 0; font-size: 0.95rem;">
+            Download item reports in CSV format for analysis or archiving
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a th:href="@{/reports/items.csv}"
+               class="btn"
+               style="background: white; color: #667eea; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                📥 Export All Items
+            </a>
+            <a th:href="@{/reports/items.csv(itemType='LOST')}"
+               class="btn"
+               style="background: #FF6B6B; color: white; font-weight: 600; box-shadow: 0 4px 15px rgba(255,107,107,0.3);">
+                📥 Export Lost Items
+            </a>
+            <a th:href="@{/reports/items.csv(itemType='FOUND')}"
+               class="btn"
+               style="background: #4ECDC4; color: white; font-weight: 600; box-shadow: 0 4px 15px rgba(78,205,196,0.3);">
+                📥 Export Found Items
+            </a>
+        </div>
+        <p style="color: rgba(255,255,255,0.8); margin: 16px 0 0 0; font-size: 0.85rem;">
+            💡 CSV files can be opened in Excel, Google Sheets, or converted to PDF
+        </p>
+    </div>
 
     <div class="charts-container">
         <!-- Row 1: Lost vs Found + Items by Category -->
@@ -79,7 +106,14 @@
 
     <!-- All Items Section -->
     <div class="section">
-        <h2>📦 All Items</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0;">📦 All Items</h2>
+            <a th:href="@{/reports/items.csv}"
+               class="btn"
+               style="background: #10b981; color: white;">
+                📥 Export Table
+            </a>
+        </div>
         <table class="table">
             <thead>
             <tr>
@@ -95,11 +129,22 @@
             <tbody>
             <tr th:each="item : ${items}">
                 <td th:text="${item.itemId}">1</td>
-                <td th:text="${item.itemType}">LOST</td>
+                <td>
+                    <span th:text="${item.itemType}"
+                          th:style="${item.itemType == 'LOST' ? 'color: #FF6B6B; font-weight: 600;' : 'color: #4ECDC4; font-weight: 600;'}">
+                        LOST
+                    </span>
+                </td>
                 <td th:text="${item.itemName}">Item Name</td>
                 <td th:text="${item.category != null ? item.category.categoryName : 'N/A'}">Category</td>
                 <td th:text="${item.user != null ? item.user.fullName : 'Unknown'}">Owner</td>
-                <td th:text="${item.status}">ACTIVE</td>
+                <td>
+                    <span th:text="${item.status}"
+                          th:style="${item.status == 'ACTIVE' ? 'color: #10b981; font-weight: 600;' :
+                                    (item.status == 'RESOLVED' ? 'color: #3b82f6; font-weight: 600;' : 'color: #6b7280;')}">
+                        ACTIVE
+                    </span>
+                </td>
                 <td>
                     <button class="btn btn-danger delete-item-btn"
                             th:attr="data-item-id=${item.itemId}, data-item-name=${item.itemName}">
@@ -131,12 +176,21 @@
                 <td th:text="${user.username}">username</td>
                 <td th:text="${user.fullName}">Full Name</td>
                 <td th:text="${user.email}">email@example.com</td>
-                <td th:text="${user.role}">MEMBER</td>
+                <td>
+                    <span th:text="${user.role}"
+                          th:style="${user.role == 'ADMIN' ? 'color: #7E57C2; font-weight: 600;' : 'color: #6b7280;'}">
+                        MEMBER
+                    </span>
+                </td>
                 <td>
                     <button class="btn btn-danger delete-user-btn"
+                            th:if="${user.role != 'ADMIN'}"
                             th:attr="data-user-id=${user.userId}, data-username=${user.username}">
                         Delete
                     </button>
+                    <span th:if="${user.role == 'ADMIN'}" style="color: #9ca3af; font-size: 0.875rem;">
+                        Protected
+                    </span>
                 </td>
             </tr>
             </tbody>
@@ -160,7 +214,6 @@
 
 
     // 1. LOST vs FOUND PIE CHART
-
     const lostFoundCtx = document.getElementById('lostFoundChart').getContext('2d');
     new Chart(lostFoundCtx, {
         type: 'pie',
@@ -204,7 +257,6 @@
 
 
     // 2. ITEMS BY CATEGORY BAR CHART
-
     const categoryCtx = document.getElementById('categoryChart').getContext('2d');
     new Chart(categoryCtx, {
         type: 'bar',
@@ -253,7 +305,6 @@
 
 
     // 3. MOST ACTIVE MEMBERS HORIZONTAL BAR CHART
-
     const activeUsersCtx = document.getElementById('activeUsersChart').getContext('2d');
     new Chart(activeUsersCtx, {
         type: 'bar',

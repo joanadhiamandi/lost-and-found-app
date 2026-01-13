@@ -7,6 +7,7 @@ import com.lostandfound.app.entities.Item;
 import com.lostandfound.app.repositories.CommentRepository;
 import com.lostandfound.app.services.CategoryService;
 import com.lostandfound.app.services.ItemService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Controller
 public class ItemController {
@@ -327,5 +331,80 @@ public class ItemController {
         }
 
         return "redirect:/my-items";
+    }
+
+    @GetMapping("/reports/items.csv")
+    public void exportItemsCsv(@RequestParam(required = false) String itemType,
+                               @RequestParam(required = false) Integer categoryId,
+                               HttpSession session,
+                               HttpServletResponse response) throws IOException {
+        // Check authentication
+        AppUser user = (AppUser) session.getAttribute("loggedinuser");
+        if (user == null) {
+            response.sendRedirect("/login");
+            return;
+        }
+
+        // Set response headers for CSV download
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"items-report.csv\"");
+
+        // Get items (with optional filters)
+        List<Item> items = itemService.getActiveItems(itemType, categoryId);
+
+        // Write CSV
+        try (PrintWriter writer = response.getWriter()) {
+            // Header row
+            writer.println("ID,Type,Category,Item Name,Location,Date Lost/Found,Status,Posted By,Contact Info");
+
+            // Data rows
+            for (Item item : items) {
+                String id = item.getItemId() != null ? item.getItemId().toString() : "";
+                String type = item.getItemType() != null ? item.getItemType() : "";
+
+                // Get category name
+                String category = "";
+                if (item.getCategory() != null && item.getCategory().getCategoryName() != null) {
+                    category = item.getCategory().getCategoryName();
+                } else if (item.getCategoryId() != null) {
+                    List<Category> categories = categoryService.getAllCategories();
+                    for (Category c : categories) {
+                        if (c.getCategoryId() != null && c.getCategoryId().equals(item.getCategoryId())) {
+                            category = c.getCategoryName();
+                            break;
+                        }
+                    }
+                }
+
+                String name = escapeCsv(item.getItemName());
+                String location = escapeCsv(item.getLocation());
+                String date = item.getDateLostFound() != null ? item.getDateLostFound().toString() : "";
+                String status = item.getStatus() != null ? item.getStatus() : "";
+
+                // Get username
+                String postedBy = "";
+                if (item.getUser() != null && item.getUser().getUsername() != null) {
+                    postedBy = item.getUser().getUsername();
+                } else if (item.getUserId() != null) {
+                    postedBy = "User " + item.getUserId();
+                }
+
+                String contact = escapeCsv(item.getContactInfo());
+
+                writer.printf("%s,%s,%s,%s,%s,%s,%s,%s,%s%n",
+                        id, type, category, name, location, date, status, postedBy, contact);
+            }
+        }
+    }
+
+    // Helper method to escape CSV values
+    private String escapeCsv(String value) {
+        if (value == null) return "";
+
+        // If contains comma, quote, or newline, wrap in quotes and escape quotes
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 }
